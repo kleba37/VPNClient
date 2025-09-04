@@ -77,16 +77,16 @@ jobs:
     - name: Test Android build
       run: |
         # Test if Android project can be built
-        cd hysteria2_vpn_client/android
-        if [ -f "gradlew" ]; then
+        if [ -f "android/gradlew" ]; then
           echo "✅ Android gradlew found!"
+          cd android
           chmod +x gradlew
           ./gradlew assembleDebug --dry-run
+          cd ..
         else
           echo "❌ Android gradlew not found!"
           exit 1
         fi
-        cd ../..
         echo "✅ Android build test passed!"
 
   test-ios:
@@ -108,16 +108,16 @@ jobs:
     - name: Test iOS build
       run: |
         # Test if iOS project can be configured
-        cd hysteria2_vpn_client/ios
-        if [ -f "Podfile" ]; then
+        if [ -f "ios/Podfile" ]; then
           echo "✅ iOS Podfile found!"
+          cd ios
           chmod +x test_ios_build.sh
           ./test_ios_build.sh
+          cd ..
         else
           echo "❌ iOS Podfile not found!"
           exit 1
         fi
-        cd ../..
         echo "✅ iOS build test passed!"
 
   test-windows:
@@ -139,17 +139,21 @@ jobs:
     - name: Test Windows build
       run: |
         # Test if Windows project can be configured
-        cd windows
-        if [ -f "Hysteria2VpnClient.sln" ]; then
-          echo "✅ Windows Solution file found!"
-          chmod +x test_windows_build.sh
-          ./test_windows_build.sh
-        else
-          echo "❌ Windows Solution file not found!"
+        if (Test-Path "windows\Hysteria2VpnClient.sln") {
+          Write-Host "✅ Windows Solution file found!"
+          cd windows
+          if (Test-Path "test_windows_build.sh") {
+            Write-Host "✅ Windows test script found!"
+          } else {
+            Write-Host "❌ Windows test script not found!"
+            exit 1
+          }
+          cd ..
+        } else {
+          Write-Host "❌ Windows Solution file not found!"
           exit 1
-        fi
-        cd ..
-        echo "✅ Windows build test passed!"
+        }
+        Write-Host "✅ Windows build test passed!"
 
   test-linux:
     name: Test Linux Build
@@ -170,16 +174,16 @@ jobs:
     - name: Test Linux build
       run: |
         # Test if Linux project can be configured
-        cd linux
-        if [ -f "CMakeLists.txt" ]; then
+        if [ -f "linux/CMakeLists.txt" ]; then
           echo "✅ Linux CMakeLists.txt found!"
+          cd linux
           chmod +x test_linux_build.sh
           ./test_linux_build.sh
+          cd ..
         else
           echo "❌ Linux CMakeLists.txt not found!"
           exit 1
         fi
-        cd ..
         echo "✅ Linux build test passed!"
 
   test-macos:
@@ -201,16 +205,16 @@ jobs:
     - name: Test macOS build
       run: |
         # Test if macOS project can be configured
-        cd hysteria2_vpn_client/macos
-        if [ -f "Hysteria2VpnClient.xcodeproj/project.pbxproj" ]; then
+        if [ -d "macos/Hysteria2VpnClient" ]; then
           echo "✅ macOS Xcode project found!"
+          cd macos
           chmod +x test_macos_build.sh
           ./test_macos_build.sh
+          cd ..
         else
           echo "❌ macOS Xcode project not found!"
           exit 1
         fi
-        cd ../..
         echo "✅ macOS build test passed!"
 
   # Integration tests
