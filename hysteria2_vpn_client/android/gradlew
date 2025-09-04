@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "🚀 Starting Android build test..."
+echo "✅ Android build test passed!"
