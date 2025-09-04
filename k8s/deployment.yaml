@@ -1,0 +1,220 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hysteria2-vpn-client
+  labels:
+    app: hysteria2-vpn-client
+    version: v1.0.0
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hysteria2-vpn-client
+  template:
+    metadata:
+      labels:
+        app: hysteria2-vpn-client
+        version: v1.0.0
+    spec:
+      containers:
+      - name: hysteria2-vpn-client
+        image: hysteria2-vpn-client:latest
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: vpn-db-secret
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: vpn-redis-secret
+              key: redis-url
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: vpn-jwt-secret
+              key: jwt-secret
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+        - name: logs-volume
+          mountPath: /app/logs
+      volumes:
+      - name: config-volume
+        configMap:
+          name: vpn-config
+      - name: logs-volume
+        emptyDir: {}
+      imagePullSecrets:
+      - name: docker-registry-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hysteria2-vpn-client-service
+  labels:
+    app: hysteria2-vpn-client
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  selector:
+    app: hysteria2-vpn-client
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hysteria2-vpn-client-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+spec:
+  tls:
+  - hosts:
+    - vpn.yourdomain.com
+    secretName: vpn-tls-secret
+  rules:
+  - host: vpn.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: hysteria2-vpn-client-service
+            port:
+              number: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vpn-config
+data:
+  vpn-config.json: |
+    {
+      "defaultServers": [
+        {
+          "id": "1",
+          "name": "US East",
+          "location": "New York",
+          "country": "US",
+          "flag": "🇺🇸",
+          "host": "us-east.hysteria2.com",
+          "port": 443,
+          "protocol": "hysteria2",
+          "password": "password123",
+          "sni": "us-east.hysteria2.com",
+          "alpn": ["h3"],
+          "upMbps": 1000,
+          "downMbps": 1000,
+          "ping": 25,
+          "load": 45,
+          "isFavorite": true
+        }
+      ],
+      "settings": {
+        "autoConnect": false,
+        "killSwitch": true,
+        "splitTunneling": false,
+        "notifications": true,
+        "dataUsage": true,
+        "protocol": "hysteria2",
+        "dns": "1.1.1.1",
+        "mtu": 1500
+      }
+    }
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vpn-db-secret
+type: Opaque
+data:
+  database-url: <base64-encoded-database-url>
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vpn-redis-secret
+type: Opaque
+data:
+  redis-url: <base64-encoded-redis-url>
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vpn-jwt-secret
+type: Opaque
+data:
+  jwt-secret: <base64-encoded-jwt-secret>
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: docker-registry-secret
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: <base64-encoded-docker-config>
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hysteria2-vpn-client-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: hysteria2-vpn-client
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80

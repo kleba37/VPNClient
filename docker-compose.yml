@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  hysteria2-vpn-client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: hysteria2-vpn-client
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs
+    networks:
+      - vpn-network
+    depends_on:
+      - redis
+      - postgres
+
+  redis:
+    image: redis:7-alpine
+    container_name: vpn-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - vpn-network
+    command: redis-server --appendonly yes
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: vpn-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=vpn_client
+      - POSTGRES_USER=vpn_user
+      - POSTGRES_PASSWORD=vpn_password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - vpn-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: vpn-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./logs/nginx:/var/log/nginx
+    networks:
+      - vpn-network
+    depends_on:
+      - hysteria2-vpn-client
+
+volumes:
+  redis-data:
+    driver: local
+  postgres-data:
+    driver: local
+
+networks:
+  vpn-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

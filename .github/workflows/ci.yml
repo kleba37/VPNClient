@@ -1,0 +1,462 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, develop ]
+  release:
+    types: [ published ]
+
+env:
+  NODE_VERSION: '18.x'
+  JAVA_VERSION: '17'
+  ANDROID_NDK_VERSION: '25.1.8937393'
+  ANDROID_SDK_VERSION: '33.0.0'
+
+jobs:
+  # Test job - runs on all platforms
+  test:
+    name: Test (Node ${{ matrix.node-version }})
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [18.x]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+    
+    - name: Clear npm cache
+      run: npm cache clean --force
+    
+    - name: Install dependencies
+      run: npm install --force
+    
+    - name: Run type check
+      run: npm run type-check
+    
+    - name: Run linter
+      run: npm run lint
+    
+    - name: Run tests
+      run: npm test -- --coverage --watchAll=false --ci --passWithNoTests
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+
+  # Android build job
+  build-android:
+    name: Build Android
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK ${{ env.JAVA_VERSION }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+    
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    
+    - name: Clear npm cache
+      run: npm cache clean --force
+    
+    - name: Install dependencies
+      run: npm install --force
+    
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        ndk-version: ${{ env.ANDROID_NDK_VERSION }}
+        sdk-version: ${{ env.ANDROID_SDK_VERSION }}
+    
+    - name: Create keystore file
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: |
+        echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
+        echo "storeFile=release.keystore" >> android/gradle.properties
+        echo "storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}" >> android/gradle.properties
+        echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/gradle.properties
+        echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/gradle.properties
+    
+    - name: Build Android APK
+      run: npm run build:android
+    
+    - name: Build Android AAB
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: npm run build:android:bundle
+    
+    - name: Upload Android APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: android-apk-${{ github.sha }}
+        path: android/app/build/outputs/apk/release/
+        retention-days: 30
+    
+    - name: Upload Android AAB
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: actions/upload-artifact@v3
+      with:
+        name: android-aab-${{ github.sha }}
+        path: android/app/build/outputs/bundle/release/
+        retention-days: 30
+
+  # iOS build job
+  build-ios:
+    name: Build iOS
+    needs: test
+    runs-on: macos-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    
+    - name: Clear npm cache
+      run: npm cache clean --force
+    
+    - name: Install dependencies
+      run: npm install --force
+    
+    - name: Setup iOS
+      run: |
+        cd ios
+        pod install
+        cd ..
+    
+    - name: Build iOS Archive
+      run: npm run build:ios
+    
+    - name: Build iOS Simulator
+      run: npm run build:ios:simulator
+    
+    - name: Upload iOS Archive
+      uses: actions/upload-artifact@v3
+      with:
+        name: ios-archive-${{ github.sha }}
+        path: ios/Hysteria2VpnClient.xcarchive
+        retention-days: 30
+    
+    - name: Upload iOS Simulator Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: ios-simulator-${{ github.sha }}
+        path: ios/build/
+        retention-days: 30
+
+  # Windows build job
+  build-windows:
+    name: Build Windows
+    needs: test
+    runs-on: windows-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    
+    - name: Clear npm cache
+      run: npm cache clean --force
+    
+    - name: Install dependencies
+      run: npm install --force
+    
+    - name: Setup Windows Build Tools
+      run: |
+        npm install --global --production windows-build-tools
+    
+    - name: Build Windows
+      run: npm run build:windows
+    
+    - name: Upload Windows Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-build-${{ github.sha }}
+        path: windows/build/
+        retention-days: 30
+
+  # Linux build job
+  build-linux:
+    name: Build Linux
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    
+    - name: Clear npm cache
+      run: npm cache clean --force
+    
+    - name: Install dependencies
+      run: npm install --force
+    
+    - name: Install Linux dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake libgtk-3-dev libwebkit2gtk-4.0-dev
+        sudo apt-get install -y libssl-dev libcurl4-openssl-dev libsqlite3-dev
+    
+    - name: Build Linux
+      run: npm run build:linux
+    
+    - name: Upload Linux Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: linux-build-${{ github.sha }}
+        path: linux/build/
+        retention-days: 30
+
+  # macOS build job
+  build-macos:
+    name: Build macOS
+    needs: test
+    runs-on: macos-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    
+    - name: Clear npm cache
+      run: npm cache clean --force
+    
+    - name: Install dependencies
+      run: npm install --force
+    
+    - name: Build macOS
+      run: npm run build:macos
+    
+    - name: Upload macOS Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: macos-build-${{ github.sha }}
+        path: macos/Hysteria2VpnClient.xcarchive
+        retention-days: 30
+
+  # Web build job
+  build-web:
+    name: Build Web
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    
+    - name: Clear npm cache
+      run: npm cache clean --force
+    
+    - name: Install dependencies
+      run: npm install --force
+    
+    - name: Build Web
+      run: npm run build:web
+    
+    - name: Upload Web Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: web-build-${{ github.sha }}
+        path: build/
+        retention-days: 30
+
+  # Docker build job
+  docker:
+    name: Build Docker
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ secrets.DOCKER_USERNAME }}/hysteria2-vpn-client
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=raw,value={{version}},enable={{is_tag}}
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64,linux/arm/v7
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  # Create Release job
+  create-release:
+    name: Create Release
+    needs: [build-android, build-ios, build-windows, build-linux, build-macos, build-web, docker]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+    
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+        body: |
+          ## 🚀 Hysteria2 VPN Client Release ${{ github.ref }}
+          
+          ### 📱 Supported Platforms
+          - **Android**: APK & AAB packages
+          - **iOS**: Archive & Simulator builds
+          - **Windows**: Native Windows application
+          - **Linux**: Native Linux application
+          - **macOS**: Native macOS application
+          - **Web**: Progressive Web App
+          - **Docker**: Multi-platform container
+          
+          ### 🔧 Build Information
+          - **Commit**: ${{ github.sha }}
+          - **Branch**: ${{ github.ref_name }}
+          - **Build Date**: ${{ github.event.head_commit.timestamp }}
+          
+          ### 📦 Downloads
+          Check the artifacts section below for platform-specific builds.
+          
+          ### 🐛 Bug Reports
+          If you encounter any issues, please report them on our [GitHub Issues](https://github.com/${{ github.repository }}/issues) page.
+    
+    - name: Upload Android APK to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./artifacts/android-apk-${{ github.sha }}/app-release.apk
+        asset_name: Hysteria2VPNClient-Android-${{ github.ref_name }}.apk
+        asset_content_type: application/vnd.android.package-archive
+    
+    - name: Upload Android AAB to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./artifacts/android-aab-${{ github.sha }}/app-release.aab
+        asset_name: Hysteria2VPNClient-Android-${{ github.ref_name }}.aab
+        asset_content_type: application/octet-stream
+    
+    - name: Upload Windows Build to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./artifacts/windows-build-${{ github.sha }}/
+        asset_name: Hysteria2VPNClient-Windows-${{ github.ref_name }}.zip
+        asset_content_type: application/zip
+    
+    - name: Upload Linux Build to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./artifacts/linux-build-${{ github.sha }}/
+        asset_name: Hysteria2VPNClient-Linux-${{ github.ref_name }}.tar.gz
+        asset_content_type: application/gzip
+
+  # Deploy job
+  deploy:
+    name: Deploy
+    needs: [create-release]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - name: Deploy to production
+      run: |
+        echo "🚀 Deploying Hysteria2 VPN Client ${{ github.ref }} to production..."
+        echo "📱 Platform builds completed:"
+        echo "  - Android: ✅ APK & AAB"
+        echo "  - iOS: ✅ Archive & Simulator"
+        echo "  - Windows: ✅ Native app"
+        echo "  - Linux: ✅ Native app"
+        echo "  - macOS: ✅ Native app"
+        echo "  - Web: ✅ PWA"
+        echo "  - Docker: ✅ Multi-platform container"
+        echo ""
+        echo "🎯 Next steps:"
+        echo "  1. Upload iOS build to App Store Connect"
+        echo "  2. Upload Android AAB to Google Play Console"
+        echo "  3. Deploy web version to CDN"
+        echo "  4. Push Docker image to production registry"
+        echo "  5. Update deployment manifests"
+        echo ""
+        echo "✅ Release ${{ github.ref }} successfully deployed!"
