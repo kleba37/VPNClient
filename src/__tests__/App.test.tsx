@@ -1,5 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
+import { describe, it, expect, jest } from '@jest/globals';
 import App from '../App';
 
 // Mock navigation and other dependencies
