@@ -9,6 +9,7 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "type-check": "tsc --noEmit",
     "build:android": "cd android && ./gradlew assembleRelease",
     "build:ios": "cd ios && xcodebuild -workspace Hysteria2VpnClient.xcworkspace -scheme Hysteria2VpnClient -configuration Release archive -archivePath Hysteria2VpnClient.xcarchive",
     "build:ios:simulator": "cd ios && xcodebuild -workspace Hysteria2VpnClient.xcworkspace -scheme Hysteria2VpnClient -configuration Release -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14' build",
@@ -19,8 +20,8 @@
     "build:docker": "docker build -t hysteria2-vpn-client ."
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.2.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "react-native": "0.72.17",
     "react-native-mmkv": "^2.10.1",
     "react-native-linear-gradient": "^2.8.3",
