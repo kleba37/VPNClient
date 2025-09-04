@@ -264,17 +264,16 @@ jobs:
       run: npm install
     
     - name: Run security audit
-      run: npm audit --audit-level=moderate
-    
-    - name: Check for known vulnerabilities
       run: |
-        echo "🔒 Checking for security vulnerabilities..."
-        
-        # Check for outdated packages
-        npm outdated
-        
-        # Check for known vulnerabilities
-        npm audit --audit-level=moderate
+        echo "🔒 Running security audit..."
+        chmod +x scripts/security-check.sh
+        ./scripts/security-check.sh
+    
+    - name: Check for outdated packages
+      run: |
+        echo "📦 Checking for outdated packages..."
+        chmod +x scripts/package-check.sh
+        ./scripts/package-check.sh
         
         echo "✅ Security tests completed!"
 
