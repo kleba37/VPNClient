@@ -489,7 +489,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: windows/build/Release/
+        asset_path: ./artifacts/windows-build-${{ github.sha }}/
         asset_name: Hysteria2VPNClient-Windows-${{ github.ref_name }}.zip
         asset_content_type: application/zip
     
@@ -499,7 +499,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: linux/build/Release/
+        asset_path: ./artifacts/linux-build-${{ github.sha }}/
         asset_name: Hysteria2VPNClient-Linux-${{ github.ref_name }}.tar.gz
         asset_content_type: application/gzip
     
@@ -509,7 +509,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: web/build/
+        asset_path: ./artifacts/web-build-${{ github.sha }}/
         asset_name: Hysteria2VPNClient-Web-${{ github.ref_name }}.zip
         asset_content_type: application/zip
     
@@ -519,7 +519,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: hysteria2-vpn-client.tar
+        asset_path: ./artifacts/docker-build-${{ github.sha }}/hysteria2-vpn-client.tar
         asset_name: Hysteria2VPNClient-Docker-${{ github.ref_name }}.tar
         asset_content_type: application/x-tar
     
