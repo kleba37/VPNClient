@@ -12,7 +12,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../contexts/ThemeContext';
-import {VpnService} from '../services/VpnService';
+import VpnService from '../services/VpnService';
 import {ServerInfo} from '../types/ServerInfo';
 
 const ServersScreen: React.FC = () => {
@@ -29,7 +29,7 @@ const ServersScreen: React.FC = () => {
   const loadServers = async () => {
     try {
       setLoading(true);
-      const serverList = await VpnService.getInstance().getServerList();
+      const serverList = await VpnService.getServerList();
       setServers(serverList);
     } catch (error) {
       Alert.alert('Error', 'Failed to load servers');
@@ -47,7 +47,7 @@ const ServersScreen: React.FC = () => {
         {
           text: 'Connect',
           onPress: () => {
-            (navigation as any).navigate('Home', {selectedServer: server});
+                         (navigation as any).navigate('Home', {selectedServer: server});
           },
         },
       ],
@@ -57,7 +57,7 @@ const ServersScreen: React.FC = () => {
   const handleTestServer = async (server: ServerInfo) => {
     try {
       setTestingServer(server.id);
-      const result = await VpnService.getInstance().testServer(server);
+      const result = await VpnService.testServer(server);
       
       Alert.alert(
         'Server Test Results',

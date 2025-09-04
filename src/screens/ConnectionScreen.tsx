@@ -11,7 +11,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../contexts/ThemeContext';
-import {VpnService} from '../services/VpnService';
+import VpnService from '../services/VpnService';
 import {ConnectionStats} from '../types/ServerInfo';
 
 const {width} = Dimensions.get('window');
@@ -23,7 +23,7 @@ const ConnectionScreen: React.FC = () => {
   const [currentServer, setCurrentServer] = useState<any>(null);
 
   useEffect(() => {
-    const vpnService = VpnService.getInstance();
+    const vpnService = VpnService;
     const isConnected = vpnService.getConnectionStatus();
     
     if (isConnected) {
@@ -277,7 +277,7 @@ const ConnectionScreen: React.FC = () => {
           <TouchableOpacity
             style={[styles.actionButton, {backgroundColor: theme.colors.error}]}
             onPress={() => {
-              VpnService.getInstance().disconnect();
+              VpnService.disconnect();
               navigation.goBack();
             }}>
             <Text style={styles.actionButtonText}>Disconnect</Text>

@@ -12,7 +12,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../contexts/ThemeContext';
-import {VpnService} from '../services/VpnService';
+import VpnService from '../services/VpnService';
 import {ServerInfo} from '../types/ServerInfo';
 
 const {width, height} = Dimensions.get('window');
@@ -57,7 +57,7 @@ const HomeScreen: React.FC = () => {
     if (isConnected) {
       try {
         setIsConnecting(true);
-        await VpnService.getInstance().disconnect();
+        await VpnService.disconnect();
         setIsConnected(false);
         setCurrentServer(null);
         setConnectionStats({
@@ -71,14 +71,14 @@ const HomeScreen: React.FC = () => {
         setIsConnecting(false);
       }
     } else {
-      if (!currentServer) {
-                  (navigation as any).navigate('Servers');
-        return;
-      }
+              if (!currentServer) {
+          (navigation as any).navigate('Servers');
+          return;
+        }
 
       try {
         setIsConnecting(true);
-        await VpnService.getInstance().connect(currentServer);
+        await VpnService.connect(currentServer);
         setIsConnected(true);
         
         // Simulate connection stats

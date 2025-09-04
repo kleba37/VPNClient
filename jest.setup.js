@@ -1,29 +1,15 @@
+/* global jest */
+
 // Mock React Native modules
-jest.mock('react-native-reanimated', () => {
-  const Reanimated = require('react-native-reanimated/mock');
-  Reanimated.default.call = () => {};
-  return Reanimated;
-});
-
 jest.mock('react-native-linear-gradient', () => 'LinearGradient');
+jest.mock('react-native-vector-icons/MaterialIcons', () => 'Icon');
 jest.mock('react-native-svg', () => 'Svg');
-jest.mock('react-native-vector-icons', () => 'Icon');
-
-// Mock navigation
-jest.mock('@react-navigation/native', () => ({
-  useNavigation: () => ({
-    navigate: jest.fn(),
-    goBack: jest.fn(),
-  }),
-  useRoute: () => ({
-    params: {},
-  }),
-}));
-
-// Mock other modules
-jest.mock('react-native-permissions', () => ({}));
-jest.mock('react-native-device-info', () => ({}));
-jest.mock('react-native-network-info', () => ({}));
+jest.mock('react-native-gesture-handler', () => 'GestureHandler');
+jest.mock('react-native-reanimated', () => 'Reanimated');
+jest.mock('react-native-safe-area-context', () => 'SafeAreaContext');
+jest.mock('react-native-screens', () => 'Screens');
+jest.mock('react-native-permissions', () => 'Permissions');
+jest.mock('react-native-device-info', () => 'DeviceInfo');
 jest.mock('react-native-config', () => ({}));
 jest.mock('react-native-keychain', () => ({}));
 jest.mock('react-native-mmkv', () => ({
@@ -36,10 +22,11 @@ jest.mock('react-native-mmkv', () => ({
   })),
 }));
 jest.mock('react-native-splash-screen', () => ({}));
+jest.mock('react-native-network-info', () => ({}));
 
-// Silence specific warnings
-jest.spyOn(console, 'warn').mockImplementation(() => {});
-jest.spyOn(console, 'error').mockImplementation(() => {});
+// Silence console warnings and errors during tests
+console.warn = jest.fn();
+console.error = jest.fn();
 
-// Global test setup
+// Set development mode to false
 global.__DEV__ = false;

@@ -3,14 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
   StatusBar,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../contexts/ThemeContext';
-
-const {width, height} = Dimensions.get('window');
 
 const SplashScreen: React.FC = () => {
   const navigation = useNavigation();

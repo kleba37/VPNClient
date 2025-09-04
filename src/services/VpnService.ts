@@ -2,7 +2,7 @@ import {ServerInfo, ConnectionStats, VpnConfig} from '../types/ServerInfo';
 
 export class VpnService {
   private static instance: VpnService;
-  private isConnectedState: boolean = false;
+  private isConnected: boolean = false;
   private currentServer: ServerInfo | null = null;
   private connectionStats: ConnectionStats | null = null;
   private connectionStartTime: number = 0;
@@ -22,7 +22,7 @@ export class VpnService {
       await this.simulateConnection(server);
       
       this.currentServer = server;
-      this.isConnectedState = true;
+      this.isConnected = true;
       this.connectionStartTime = Date.now();
       
       // Start monitoring connection stats
@@ -40,7 +40,7 @@ export class VpnService {
       // Simulate disconnection process
       await this.simulateDisconnection();
       
-      this.isConnectedState = false;
+      this.isConnected = false;
       this.currentServer = null;
       this.connectionStats = null;
       this.connectionStartTime = 0;
@@ -52,16 +52,8 @@ export class VpnService {
     }
   }
 
-  public isConnected(): boolean {
-    return this.isConnectedState;
-  }
-
   public getConnectionStatus(): boolean {
-    return this.isConnectedState;
-  }
-
-  public getStatus(): string {
-    return this.isConnectedState ? 'Connected' : 'Disconnected';
+    return this.isConnected;
   }
 
   public getCurrentServer(): ServerInfo | null {
@@ -69,7 +61,7 @@ export class VpnService {
   }
 
   public getConnectionStats(): ConnectionStats | null {
-    if (!this.isConnectedState || !this.connectionStartTime) {
+    if (!this.isConnected || !this.connectionStartTime) {
       return null;
     }
 
@@ -192,7 +184,7 @@ export class VpnService {
     // In a real app, this would monitor actual connection stats
     // For now, we'll just simulate it
     setInterval(() => {
-      if (this.isConnectedState) {
+      if (this.isConnected) {
         this.connectionStats = {
           upload: `${Math.floor(Math.random() * 1000 + 100)} KB/s`,
           download: `${Math.floor(Math.random() * 2000 + 500)} KB/s`,
