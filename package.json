@@ -61,8 +61,6 @@
     "@tsconfig/react-native": "^3.0.0",
     "@types/react": "^18.0.24",
     "@types/react-test-renderer": "^18.0.0",
-    "@testing-library/react-native": "^12.4.0",
-    "@types/jest": "^29.5.0",
     "babel-jest": "^29.2.1",
     "eslint": "^8.19.0",
     "jest": "^29.2.1",
@@ -70,9 +68,6 @@
     "prettier": "^2.4.1",
     "react-test-renderer": "18.2.0",
     "typescript": "4.8.4"
-  },
-  "jest": {
-    "preset": "react-native"
   },
   "keywords": [
     "vpn",

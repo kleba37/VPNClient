@@ -22,7 +22,6 @@ jest.mock('react-native-mmkv', () => ({
   })),
 }));
 jest.mock('react-native-splash-screen', () => ({}));
-jest.mock('react-native-network-info', () => ({}));
 
 // Silence console warnings and errors during tests
 console.warn = jest.fn();
