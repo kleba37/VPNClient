@@ -193,7 +193,7 @@ jobs:
     - name: Build Windows
       run: |
         cd windows
-        ./build_windows.sh
+        .\build_windows.ps1
         cd ..
     
     - name: Upload Windows Build
@@ -477,7 +477,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/windows-build-${{ github.sha }}/
+        asset_path: windows/build/Release/
         asset_name: Hysteria2VPNClient-Windows-${{ github.ref_name }}.zip
         asset_content_type: application/zip
     
@@ -487,9 +487,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/linux-build-${{ github.ref_name }}/
+        asset_path: linux/build/Release/
         asset_name: Hysteria2VPNClient-Linux-${{ github.ref_name }}.tar.gz
         asset_content_type: application/gzip
+    
+
 
   # Deploy job
   deploy:
