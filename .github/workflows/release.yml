@@ -59,7 +59,7 @@ jobs:
           - **Build Date**: ${new Date().toISOString()}
           
           ### 📝 Changelog
-          ${steps.changelog.outputs.result}
+          ${${{ steps.changelog.outputs.result }}}
           
           ### 📦 Downloads
           Build artifacts will be available once the CI/CD pipeline completes.
