@@ -483,15 +483,27 @@ jobs:
         asset_name: Hysteria2VPNClient-Android-${{ github.ref_name }}.aab
         asset_content_type: application/octet-stream
     
+    - name: Create Windows ZIP
+      run: |
+        cd ./artifacts/windows-build-${{ github.sha }}/
+        zip -r ../windows-build-${{ github.ref_name }}.zip .
+        cd ../..
+    
     - name: Upload Windows Build to Release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/windows-build-${{ github.sha }}/
+        asset_path: ./artifacts/windows-build-${{ github.ref_name }}.zip
         asset_name: Hysteria2VPNClient-Windows-${{ github.ref_name }}.zip
         asset_content_type: application/zip
+    
+    - name: Create Linux TAR.GZ
+      run: |
+        cd ./artifacts/linux-build-${{ github.sha }}/
+        tar -czf ../linux-build-${{ github.ref_name }}.tar.gz .
+        cd ../..
     
     - name: Upload Linux Build to Release
       uses: actions/upload-release-asset@v1
@@ -499,9 +511,15 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/linux-build-${{ github.sha }}/
+        asset_path: ./artifacts/linux-build-${{ github.ref_name }}.tar.gz
         asset_name: Hysteria2VPNClient-Linux-${{ github.ref_name }}.tar.gz
         asset_content_type: application/gzip
+    
+    - name: Create Web ZIP
+      run: |
+        cd ./artifacts/web-build-${{ github.sha }}/
+        zip -r ../web-build-${{ github.ref_name }}.zip .
+        cd ../..
     
     - name: Upload Web Build to Release
       uses: actions/upload-release-asset@v1
@@ -509,7 +527,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/web-build-${{ github.sha }}/
+        asset_path: ./artifacts/web-build-${{ github.ref_name }}.zip
         asset_name: Hysteria2VPNClient-Web-${{ github.ref_name }}.zip
         asset_content_type: application/zip
     
@@ -522,6 +540,38 @@ jobs:
         asset_path: ./artifacts/docker-build-${{ github.sha }}/hysteria2-vpn-client.tar
         asset_name: Hysteria2VPNClient-Docker-${{ github.ref_name }}.tar
         asset_content_type: application/x-tar
+    
+    - name: Create iOS ZIP
+      run: |
+        cd ./artifacts/ios-builds-${{ github.sha }}/
+        zip -r ../ios-builds-${{ github.ref_name }}.zip .
+        cd ../..
+    
+    - name: Upload iOS Build to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./artifacts/ios-builds-${{ github.ref_name }}.zip
+        asset_name: Hysteria2VPNClient-iOS-${{ github.ref_name }}.zip
+        asset_content_type: application/zip
+    
+    - name: Create macOS ZIP
+      run: |
+        cd ./artifacts/macos-build-${{ github.sha }}/
+        zip -r ../macos-build-${{ github.ref_name }}.zip .
+        cd ../..
+    
+    - name: Upload macOS Build to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./artifacts/macos-build-${{ github.ref_name }}.zip
+        asset_name: Hysteria2VPNClient-macOS-${{ github.ref_name }}.zip
+        asset_content_type: application/zip
     
 
 

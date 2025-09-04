@@ -33,3 +33,4 @@ echo "🪟 Debug EXE: build/Debug/Hysteria2VpnClient.exe"
 echo "🪟 MSI Installer: build/Release/Hysteria2VpnClient.msi"
 
 exit 0
+

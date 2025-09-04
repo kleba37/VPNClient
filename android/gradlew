@@ -29,3 +29,4 @@ echo "📦 APK: app/build/outputs/apk/release/app-release.apk"
 echo "📦 AAB: app/build/outputs/bundle/release/app-release.aab"
 
 exit 0
+

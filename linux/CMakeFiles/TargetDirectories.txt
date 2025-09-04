@@ -1,0 +1,7 @@
+/home/user/_dev/My/vpnclient/linux/CMakeFiles/Hysteria2VpnClient.dir
+/home/user/_dev/My/vpnclient/linux/CMakeFiles/edit_cache.dir
+/home/user/_dev/My/vpnclient/linux/CMakeFiles/rebuild_cache.dir
+/home/user/_dev/My/vpnclient/linux/CMakeFiles/list_install_components.dir
+/home/user/_dev/My/vpnclient/linux/CMakeFiles/install.dir
+/home/user/_dev/My/vpnclient/linux/CMakeFiles/install/local.dir
+/home/user/_dev/My/vpnclient/linux/CMakeFiles/install/strip.dir

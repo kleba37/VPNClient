@@ -29,3 +29,4 @@ Write-Host "✅ Windows build completed successfully!" -ForegroundColor Green
 Write-Host "🪟 Release EXE: build\Release\Hysteria2VpnClient.exe" -ForegroundColor Cyan
 Write-Host "🪟 Debug EXE: build\Debug\Hysteria2VpnClient.exe" -ForegroundColor Cyan
 Write-Host "🪟 MSI Installer: build\Release\Hysteria2VpnClient.msi" -ForegroundColor Cyan
+

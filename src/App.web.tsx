@@ -1,24 +1,28 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from './contexts/ThemeContext';
+import HomeScreen from './screens/HomeScreen.web';
+import ServersScreen from './screens/ServersScreen.web';
+import SettingsScreen from './screens/SettingsScreen.web';
+import ConnectionScreen from './screens/ConnectionScreen.web';
+import SplashScreen from './components/SplashScreen.web';
+import './App.web.css';
 
 const App: React.FC = () => {
   return (
-    <div style={{ 
-      padding: '20px', 
-      fontFamily: 'Arial, sans-serif',
-      textAlign: 'center' 
-    }}>
-      <h1>Hysteria2 VPN Client</h1>
-      <p>Web version is under development</p>
-      <div style={{ 
-        marginTop: '20px',
-        padding: '20px',
-        backgroundColor: '#f5f5f5',
-        borderRadius: '8px'
-      }}>
-        <p>This is a placeholder for the web version of the VPN client.</p>
-        <p>Mobile and desktop versions are available.</p>
-      </div>
-    </div>
+    <ThemeProvider>
+      <Router>
+        <div className="app">
+          <Routes>
+            <Route path="/" element={<SplashScreen />} />
+            <Route path="/home" element={<HomeScreen />} />
+            <Route path="/servers" element={<ServersScreen />} />
+            <Route path="/settings" element={<SettingsScreen />} />
+            <Route path="/connection" element={<ConnectionScreen />} />
+          </Routes>
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 };
 

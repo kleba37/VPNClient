@@ -46,3 +46,4 @@ echo "📱 Device IPA: build/Release-iphoneos/Hysteria2VpnClient.ipa"
 echo "📱 Simulator IPA: build/Release-iphonesimulator/Hysteria2VpnClient.ipa"
 
 exit 0
+
