@@ -8,10 +8,6 @@ jest.mock('react-native-gesture-handler', () => 'GestureHandler');
 jest.mock('react-native-reanimated', () => 'Reanimated');
 jest.mock('react-native-safe-area-context', () => 'SafeAreaContext');
 jest.mock('react-native-screens', () => 'Screens');
-jest.mock('react-native-permissions', () => 'Permissions');
-jest.mock('react-native-device-info', () => 'DeviceInfo');
-jest.mock('react-native-config', () => ({}));
-jest.mock('react-native-keychain', () => ({}));
 jest.mock('react-native-mmkv', () => ({
   MMKV: jest.fn(() => ({
     set: jest.fn(),
