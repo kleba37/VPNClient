@@ -363,7 +363,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         script: |
-          const core = require('@actions/core');
           const tagName = context.ref.replace('refs/tags/', '');
           
           try {
