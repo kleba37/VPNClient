@@ -13,21 +13,21 @@ const SplashScreen: React.FC = () => {
   }, [navigate]);
 
   return (
-    <div className="container gradient-bg" style={{ 
-      justifyContent: 'center', 
+    <div className="container gradient-bg" style={{
+      justifyContent: 'center',
       alignItems: 'center',
       textAlign: 'center'
     }}>
-      <div style={{ 
-        fontSize: '48px', 
+      <div style={{
+        fontSize: '48px',
         marginBottom: '20px',
         animation: 'pulse 2s infinite'
       }}>
         🔒
       </div>
-      <h1 style={{ 
-        fontSize: '32px', 
-        fontWeight: 'bold', 
+      <h1 style={{
+        fontSize: '32px',
+        fontWeight: 'bold',
         marginBottom: '10px',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         WebkitBackgroundClip: 'text',
@@ -36,8 +36,8 @@ const SplashScreen: React.FC = () => {
       }}>
         Hysteria2 VPN
       </h1>
-      <p style={{ 
-        fontSize: '16px', 
+      <p style={{
+        fontSize: '16px',
         color: '#a0a0a0',
         marginBottom: '40px'
       }}>

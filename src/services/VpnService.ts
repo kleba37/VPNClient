@@ -1,4 +1,4 @@
-import {ServerInfo, ConnectionStats, VpnConfig} from '../types/ServerInfo';
+import {ServerInfo, ConnectionStats} from '../types/ServerInfo';
 
 export class VpnService {
   private static instance: VpnService;
@@ -16,18 +16,18 @@ export class VpnService {
     return VpnService.instance;
   }
 
-  public async connect(server: ServerInfo): Promise<void> {
+  public async connect(_server: ServerInfo): Promise<void> {
     try {
       // Simulate connection process
-      await this.simulateConnection(server);
-      
-      this.currentServer = server;
+      await this.simulateConnection(_server);
+
+      this.currentServer = _server;
       this.isConnected = true;
       this.connectionStartTime = Date.now();
-      
+
       // Start monitoring connection stats
       this.startStatsMonitoring();
-      
+
       console.log(`Connected to ${server.name} (${server.host}:${server.port})`);
     } catch (error) {
       console.error('Failed to connect to VPN:', error);
@@ -39,12 +39,12 @@ export class VpnService {
     try {
       // Simulate disconnection process
       await this.simulateDisconnection();
-      
+
       this.isConnected = false;
       this.currentServer = null;
       this.connectionStats = null;
       this.connectionStartTime = 0;
-      
+
       console.log('Disconnected from VPN');
     } catch (error) {
       console.error('Failed to disconnect from VPN:', error);
@@ -66,7 +66,7 @@ export class VpnService {
     }
 
     const connectionTime = Date.now() - this.connectionStartTime;
-    
+
     return {
       upload: this.connectionStats?.upload || '0 KB/s',
       download: this.connectionStats?.download || '0 KB/s',
@@ -83,7 +83,7 @@ export class VpnService {
       // Simulate server testing
       const ping = Math.floor(Math.random() * 100) + 10;
       const speed = Math.floor(Math.random() * 100) + 50;
-      
+
       return {ping, speed};
     } catch (error) {
       console.error('Failed to test server:', error);
@@ -170,7 +170,7 @@ export class VpnService {
     ];
   }
 
-  private async simulateConnection(server: ServerInfo): Promise<void> {
+  private async simulateConnection(_server: ServerInfo): Promise<void> {
     // Simulate connection delay
     await new Promise(resolve => setTimeout(resolve, 2000));
   }

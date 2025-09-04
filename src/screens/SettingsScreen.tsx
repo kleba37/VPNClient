@@ -16,7 +16,7 @@ import {useTheme} from '../contexts/ThemeContext';
 const SettingsScreen: React.FC = () => {
   const navigation = useNavigation();
   const {theme, isDark, toggleTheme} = useTheme();
-  
+
   const [settings, setSettings] = useState({
     autoConnect: false,
     killSwitch: true,
@@ -76,7 +76,7 @@ const SettingsScreen: React.FC = () => {
           {subtitle}
         </Text>
       </View>
-      
+
       {type === 'switch' && (
         <Switch
           value={value}
@@ -85,7 +85,7 @@ const SettingsScreen: React.FC = () => {
           thumbColor={value ? theme.colors.surface : theme.colors.textSecondary}
         />
       )}
-      
+
       {type === 'button' && (
         <TouchableOpacity
           style={[styles.settingButton, {backgroundColor: theme.colors.primary}]}
@@ -93,7 +93,7 @@ const SettingsScreen: React.FC = () => {
           <Text style={styles.settingButtonText}>Configure</Text>
         </TouchableOpacity>
       )}
-      
+
       {type === 'select' && (
         <TouchableOpacity
           style={[styles.selectButton, {borderColor: theme.colors.border}]}
@@ -114,7 +114,7 @@ const SettingsScreen: React.FC = () => {
       colors={[theme.colors.background, theme.colors.surface]}
       style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="transparent" />
-      
+
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -124,11 +124,11 @@ const SettingsScreen: React.FC = () => {
             ← Back
           </Text>
         </TouchableOpacity>
-        
+
         <Text style={[styles.title, {color: theme.colors.text}]}>
           Settings
         </Text>
-        
+
         <View style={styles.placeholder} />
       </View>
 
@@ -138,7 +138,7 @@ const SettingsScreen: React.FC = () => {
           <Text style={[styles.sectionTitle, {color: theme.colors.text}]}>
             Connection
           </Text>
-          
+
           {renderSettingItem(
             'Auto-connect',
             'Automatically connect to VPN when app starts',
@@ -146,7 +146,7 @@ const SettingsScreen: React.FC = () => {
             settings.autoConnect,
             (value) => handleSettingChange('autoConnect', value),
           )}
-          
+
           {renderSettingItem(
             'Kill Switch',
             'Block internet when VPN disconnects',
@@ -154,7 +154,7 @@ const SettingsScreen: React.FC = () => {
             settings.killSwitch,
             (value) => handleSettingChange('killSwitch', value),
           )}
-          
+
           {renderSettingItem(
             'Split Tunneling',
             'Allow some apps to bypass VPN',
@@ -169,7 +169,7 @@ const SettingsScreen: React.FC = () => {
           <Text style={[styles.sectionTitle, {color: theme.colors.text}]}>
             Protocol
           </Text>
-          
+
           {renderSettingItem(
             'Protocol',
             'VPN protocol to use',
@@ -178,7 +178,7 @@ const SettingsScreen: React.FC = () => {
             undefined,
             () => Alert.alert('Protocol', 'Hysteria2 is the only supported protocol'),
           )}
-          
+
           {renderSettingItem(
             'DNS Servers',
             'Custom DNS servers',
@@ -187,7 +187,7 @@ const SettingsScreen: React.FC = () => {
             undefined,
             () => Alert.alert('DNS', 'Configure custom DNS servers'),
           )}
-          
+
           {renderSettingItem(
             'MTU',
             'Maximum Transmission Unit',
@@ -203,7 +203,7 @@ const SettingsScreen: React.FC = () => {
           <Text style={[styles.sectionTitle, {color: theme.colors.text}]}>
             App
           </Text>
-          
+
           {renderSettingItem(
             'Dark Theme',
             'Use dark theme for the app',
@@ -212,7 +212,7 @@ const SettingsScreen: React.FC = () => {
             undefined,
             toggleTheme,
           )}
-          
+
           {renderSettingItem(
             'Notifications',
             'Show VPN connection notifications',
@@ -220,7 +220,7 @@ const SettingsScreen: React.FC = () => {
             settings.notifications,
             (value) => handleSettingChange('notifications', value),
           )}
-          
+
           {renderSettingItem(
             'Data Usage',
             'Track VPN data usage',
@@ -235,7 +235,7 @@ const SettingsScreen: React.FC = () => {
           <Text style={[styles.sectionTitle, {color: theme.colors.text}]}>
             Advanced
           </Text>
-          
+
           {renderSettingItem(
             'Export Config',
             'Export VPN configuration file',
@@ -244,7 +244,7 @@ const SettingsScreen: React.FC = () => {
             undefined,
             handleExportConfig,
           )}
-          
+
           {renderSettingItem(
             'Clear Data',
             'Clear all app data and settings',
@@ -260,7 +260,7 @@ const SettingsScreen: React.FC = () => {
           <Text style={[styles.sectionTitle, {color: theme.colors.text}]}>
             About
           </Text>
-          
+
           <View style={[styles.aboutItem, {borderBottomColor: theme.colors.border}]}>
             <Text style={[styles.aboutLabel, {color: theme.colors.textSecondary}]}>
               Version
@@ -269,7 +269,7 @@ const SettingsScreen: React.FC = () => {
               1.0.0
             </Text>
           </View>
-          
+
           <View style={[styles.aboutItem, {borderBottomColor: theme.colors.border}]}>
             <Text style={[styles.aboutLabel, {color: theme.colors.textSecondary}]}>
               Protocol
@@ -278,7 +278,7 @@ const SettingsScreen: React.FC = () => {
               Hysteria2
             </Text>
           </View>
-          
+
           <View style={[styles.aboutItem, {borderBottomColor: theme.colors.border}]}>
             <Text style={[styles.aboutLabel, {color: theme.colors.textSecondary}]}>
               License

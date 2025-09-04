@@ -15,7 +15,7 @@ import {useTheme} from '../contexts/ThemeContext';
 import VpnService from '../services/VpnService';
 import {ServerInfo} from '../types/ServerInfo';
 
-const {width, height} = Dimensions.get('window');
+  // const {width, height} = Dimensions.get('window');
 
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -80,7 +80,7 @@ const HomeScreen: React.FC = () => {
         setIsConnecting(true);
         await VpnService.connect(currentServer);
         setIsConnected(true);
-        
+
         // Simulate connection stats
         const interval = setInterval(() => {
           if (isConnected) {
@@ -121,7 +121,7 @@ const HomeScreen: React.FC = () => {
       colors={[theme.colors.background, theme.colors.surface]}
       style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="transparent" />
-      
+
       {/* Header */}
       <View style={styles.header}>
         <Text style={[styles.title, {color: theme.colors.text}]}>
@@ -152,7 +152,7 @@ const HomeScreen: React.FC = () => {
             {isConnected ? 'Connected' : 'Disconnected'}
           </Text>
         </View>
-        
+
         {currentServer && (
           <Text style={[styles.serverText, {color: theme.colors.textSecondary}]}>
             {currentServer.name} • {currentServer.location}
@@ -238,7 +238,7 @@ const HomeScreen: React.FC = () => {
             🌍 Servers
           </Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity
           style={[styles.actionButton, {backgroundColor: theme.colors.surface}]}
           onPress={() => (navigation as any).navigate('Connection')}>

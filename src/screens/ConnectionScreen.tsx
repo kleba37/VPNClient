@@ -25,11 +25,11 @@ const ConnectionScreen: React.FC = () => {
   useEffect(() => {
     const vpnService = VpnService;
     const isConnected = vpnService.getConnectionStatus();
-    
+
     if (isConnected) {
       const server = vpnService.getCurrentServer();
       setCurrentServer(server);
-      
+
       // Update stats every second
       const interval = setInterval(() => {
         const stats = vpnService.getConnectionStats();
@@ -37,7 +37,7 @@ const ConnectionScreen: React.FC = () => {
           setConnectionStats(stats);
         }
       }, 1000);
-      
+
       return () => clearInterval(interval);
     } else {
       navigation.goBack();
@@ -56,7 +56,7 @@ const ConnectionScreen: React.FC = () => {
     const seconds = Math.floor(ms / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
     } else if (minutes > 0) {
@@ -112,7 +112,7 @@ const ConnectionScreen: React.FC = () => {
       colors={[theme.colors.background, theme.colors.surface]}
       style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="transparent" />
-      
+
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -122,11 +122,11 @@ const ConnectionScreen: React.FC = () => {
             ← Back
           </Text>
         </TouchableOpacity>
-        
+
         <Text style={[styles.title, {color: theme.colors.text}]}>
           Connection Details
         </Text>
-        
+
         <View style={styles.placeholder} />
       </View>
 
@@ -136,7 +136,7 @@ const ConnectionScreen: React.FC = () => {
           <Text style={[styles.sectionTitle, {color: theme.colors.text}]}>
             Server Information
           </Text>
-          
+
           <View style={styles.serverHeader}>
             <Text style={styles.serverFlag}>{currentServer.flag}</Text>
             <View style={styles.serverDetails}>
@@ -148,7 +148,7 @@ const ConnectionScreen: React.FC = () => {
               </Text>
             </View>
           </View>
-          
+
           {renderInfoRow('Host', currentServer.host)}
           {renderInfoRow('Port', currentServer.port.toString())}
           {renderInfoRow('Protocol', currentServer.protocol.toUpperCase())}
@@ -161,7 +161,7 @@ const ConnectionScreen: React.FC = () => {
           <Text style={[styles.sectionTitle, {color: theme.colors.text}]}>
             Connection Statistics
           </Text>
-          
+
           <View style={styles.statsGrid}>
             {renderStatCard(
               'Upload Speed',
@@ -169,21 +169,21 @@ const ConnectionScreen: React.FC = () => {
               'Current upload rate',
               theme.colors.primary,
             )}
-            
+
             {renderStatCard(
               'Download Speed',
               connectionStats.download,
               'Current download rate',
               theme.colors.secondary,
             )}
-            
+
             {renderStatCard(
               'Ping',
               connectionStats.ping,
               'Latency to server',
               theme.colors.accent,
             )}
-            
+
             {renderStatCard(
               'Connection Time',
               formatTime(connectionStats.connectionTime),
@@ -198,7 +198,7 @@ const ConnectionScreen: React.FC = () => {
           <Text style={[styles.sectionTitle, {color: theme.colors.text}]}>
             Data Usage
           </Text>
-          
+
           <View style={styles.dataUsageContainer}>
             <View style={styles.dataUsageItem}>
               <Text style={[styles.dataUsageLabel, {color: theme.colors.textSecondary}]}>
@@ -208,7 +208,7 @@ const ConnectionScreen: React.FC = () => {
                 {formatBytes(connectionStats.bytesReceived)}
               </Text>
             </View>
-            
+
             <View style={styles.dataUsageItem}>
               <Text style={[styles.dataUsageLabel, {color: theme.colors.textSecondary}]}>
                 Data Sent
@@ -225,7 +225,7 @@ const ConnectionScreen: React.FC = () => {
           <Text style={[styles.sectionTitle, {color: theme.colors.text}]}>
             Server Performance
           </Text>
-          
+
           <View style={styles.performanceContainer}>
             <View style={styles.performanceItem}>
               <Text style={[styles.performanceLabel, {color: theme.colors.textSecondary}]}>
@@ -251,7 +251,7 @@ const ConnectionScreen: React.FC = () => {
                 {connectionStats.serverLoad}%
               </Text>
             </View>
-            
+
             <View style={styles.performanceItem}>
               <Text style={[styles.performanceLabel, {color: theme.colors.textSecondary}]}>
                 Uplink Speed
@@ -260,7 +260,7 @@ const ConnectionScreen: React.FC = () => {
                 {currentServer.upMbps} Mbps
               </Text>
             </View>
-            
+
             <View style={styles.performanceItem}>
               <Text style={[styles.performanceLabel, {color: theme.colors.textSecondary}]}>
                 Downlink Speed

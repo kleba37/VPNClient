@@ -58,7 +58,7 @@ const ServersScreen: React.FC = () => {
     try {
       setTestingServer(server.id);
       const result = await VpnService.testServer(server);
-      
+
       Alert.alert(
         'Server Test Results',
         `Ping: ${result.ping}ms\nSpeed: ${result.speed}%`,
@@ -103,7 +103,7 @@ const ServersScreen: React.FC = () => {
             </Text>
           </View>
         </View>
-        
+
         <TouchableOpacity
           style={styles.favoriteButton}
           onPress={() => toggleFavorite(item.id)}>
@@ -122,7 +122,7 @@ const ServersScreen: React.FC = () => {
             {item.ping}ms
           </Text>
         </View>
-        
+
         <View style={styles.statItem}>
           <Text style={[styles.statLabel, {color: theme.colors.textSecondary}]}>
             Load
@@ -142,7 +142,7 @@ const ServersScreen: React.FC = () => {
             {item.load}%
           </Text>
         </View>
-        
+
         <View style={styles.statItem}>
           <Text style={[styles.statLabel, {color: theme.colors.textSecondary}]}>
             Speed
@@ -162,7 +162,7 @@ const ServersScreen: React.FC = () => {
           onPress={() => handleServerSelect(item)}>
           <Text style={styles.actionButtonText}>Connect</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity
           style={[
             styles.actionButton,
@@ -201,7 +201,7 @@ const ServersScreen: React.FC = () => {
       colors={[theme.colors.background, theme.colors.surface]}
       style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="transparent" />
-      
+
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -211,11 +211,11 @@ const ServersScreen: React.FC = () => {
             ← Back
           </Text>
         </TouchableOpacity>
-        
+
         <Text style={[styles.title, {color: theme.colors.text}]}>
           Select Server
         </Text>
-        
+
         <TouchableOpacity
           style={styles.refreshButton}
           onPress={loadServers}>

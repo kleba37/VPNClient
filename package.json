@@ -17,7 +17,7 @@
     "build:macos": "cd macos && xcodebuild -project Hysteria2VpnClient.xcodeproj -scheme Hysteria2VpnClient -configuration Release archive -archivePath Hysteria2VpnClient.xcarchive",
     "build:windows": "cd windows && msbuild Hysteria2VpnClient.sln /p:Configuration=Release /p:Platform=x64",
     "build:linux": "cd linux && cmake . && make",
-    "build:web": "DISABLE_ESLINT_PLUGIN=true npx react-scripts build",
+    "build:web": "ESLINT_NO_DEV_ERRORS=true npx react-scripts build",
     "build:docker": "docker build -t hysteria2-vpn-client ."
   },
   "dependencies": {

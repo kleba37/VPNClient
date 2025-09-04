@@ -27,7 +27,7 @@ const SplashScreen: React.FC = () => {
       colors={[theme.colors.primary, theme.colors.secondary]}
       style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" />
-      
+
       <View
         style={[
           styles.logoContainer,

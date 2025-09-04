@@ -6,7 +6,7 @@ import { ServerInfo } from '../types/ServerInfo';
 
 const HomeScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [currentServer, setCurrentServer] = useState<ServerInfo | null>(null);
@@ -90,7 +90,7 @@ const HomeScreen: React.FC = () => {
             {isConnected ? 'Connected' : 'Disconnected'}
           </span>
         </div>
-        
+
         {currentServer && (
           <p className="server-text">
             {currentServer.name} • {currentServer.location}
@@ -148,7 +148,7 @@ const HomeScreen: React.FC = () => {
         >
           🌍 Servers
         </button>
-        
+
         <button
           className="action-button"
           onClick={() => navigate('/connection')}
