@@ -57,9 +57,7 @@
     "@react-native-community/cli-doctor": "^20.0.1",
     "@react-native-community/cli-hermes": "^13.6.9"
   },
-  "jest": {
-    "preset": "react-native"
-  },
+
   "keywords": [
     "vpn",
     "hysteria2",
