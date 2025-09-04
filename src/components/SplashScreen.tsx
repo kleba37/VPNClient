@@ -9,22 +9,17 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../contexts/ThemeContext';
-import { RootStackParamList } from '../types/navigation';
-
-type NavigationProp = {
-  navigate: (screen: keyof RootStackParamList) => void;
-};
 
 const {width, height} = Dimensions.get('window');
 
 const SplashScreen: React.FC = () => {
-  const navigation = useNavigation<NavigationProp>();
+  const navigation = useNavigation();
   const {theme} = useTheme();
 
   useEffect(() => {
     // Navigate to home after 3 seconds
     const timer = setTimeout(() => {
-      navigation.navigate('Home');
+      (navigation as any).navigate('Home');
     }, 3000);
 
     return () => clearTimeout(timer);

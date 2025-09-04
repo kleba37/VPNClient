@@ -15,7 +15,7 @@ import ConnectionScreen from './screens/ConnectionScreen';
 import SplashScreen from './components/SplashScreen';
 
 // Services
-import VpnService from './services/VpnService';
+import {VpnService} from './services/VpnService';
 import {ThemeProvider} from './contexts/ThemeContext';
 
 const Stack = createStackNavigator();

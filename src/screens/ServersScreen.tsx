@@ -47,7 +47,7 @@ const ServersScreen: React.FC = () => {
         {
           text: 'Connect',
           onPress: () => {
-            navigation.navigate('Home', {selectedServer: server});
+            (navigation as any).navigate('Home', {selectedServer: server});
           },
         },
       ],
@@ -57,13 +57,11 @@ const ServersScreen: React.FC = () => {
   const handleTestServer = async (server: ServerInfo) => {
     try {
       setTestingServer(server.id);
-      // Mock server test for now
-      const ping = Math.floor(Math.random() * 100) + 10;
-      const speed = Math.floor(Math.random() * 100) + 50;
+      const result = await VpnService.getInstance().testServer(server);
       
       Alert.alert(
         'Server Test Results',
-        `Ping: ${ping}ms\nSpeed: ${speed}%`,
+        `Ping: ${result.ping}ms\nSpeed: ${result.speed}%`,
         [{text: 'OK'}],
       );
     } catch (error) {

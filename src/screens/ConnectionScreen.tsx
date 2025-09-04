@@ -11,7 +11,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../contexts/ThemeContext';
-import VpnService from '../services/VpnService';
+import {VpnService} from '../services/VpnService';
 import {ConnectionStats} from '../types/ServerInfo';
 
 const {width} = Dimensions.get('window');

@@ -12,7 +12,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../contexts/ThemeContext';
-import VpnService from '../services/VpnService';
+import {VpnService} from '../services/VpnService';
 import {ServerInfo} from '../types/ServerInfo';
 
 const {width, height} = Dimensions.get('window');
@@ -53,40 +53,48 @@ const HomeScreen: React.FC = () => {
     }
   }, [isConnecting, pulseAnim]);
 
-  const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
-    Alert.alert(type === 'success' ? 'Success' : 'Error', message);
-  };
-
-  const getCurrentServer = (): ServerInfo | null => {
-    return currentServer;
-  };
-
   const handleConnect = async () => {
     if (isConnected) {
       try {
         setIsConnecting(true);
-        await VpnService.disconnect();
+        await VpnService.getInstance().disconnect();
         setIsConnected(false);
         setCurrentServer(null);
-        showNotification('Disconnected from VPN');
+        setConnectionStats({
+          upload: '0 KB/s',
+          download: '0 KB/s',
+          ping: '0 ms',
+        });
       } catch (error) {
-        showNotification('Failed to disconnect', 'error');
+        Alert.alert('Error', 'Failed to disconnect from VPN');
       } finally {
         setIsConnecting(false);
       }
     } else {
+      if (!currentServer) {
+                  (navigation as any).navigate('Servers');
+        return;
+      }
+
       try {
         setIsConnecting(true);
-        const server = getCurrentServer();
-        if (server) {
-          await VpnService.connect(server.host);
-          setIsConnected(true);
-          showNotification(`Connected to ${server.name}`);
-        } else {
-          showNotification('No server selected', 'error');
-        }
+        await VpnService.getInstance().connect(currentServer);
+        setIsConnected(true);
+        
+        // Simulate connection stats
+        const interval = setInterval(() => {
+          if (isConnected) {
+            setConnectionStats({
+              upload: `${Math.floor(Math.random() * 1000 + 100)} KB/s`,
+              download: `${Math.floor(Math.random() * 2000 + 500)} KB/s`,
+              ping: `${Math.floor(Math.random() * 50 + 10)} ms`,
+            });
+          }
+        }, 2000);
+
+        return () => clearInterval(interval);
       } catch (error) {
-        showNotification('Failed to connect', 'error');
+        Alert.alert('Error', 'Failed to connect to VPN');
       } finally {
         setIsConnecting(false);
       }
@@ -121,7 +129,7 @@ const HomeScreen: React.FC = () => {
         </Text>
         <TouchableOpacity
           style={styles.settingsButton}
-          onPress={() => navigation.navigate('Settings')}>
+          onPress={() => (navigation as any).navigate('Settings')}>
           <Text style={[styles.settingsText, {color: theme.colors.primary}]}>
             ⚙️
           </Text>
@@ -225,7 +233,7 @@ const HomeScreen: React.FC = () => {
       <View style={styles.quickActions}>
         <TouchableOpacity
           style={[styles.actionButton, {backgroundColor: theme.colors.surface}]}
-          onPress={() => navigation.navigate('Servers')}>
+          onPress={() => (navigation as any).navigate('Servers')}>
           <Text style={[styles.actionButtonText, {color: theme.colors.primary}]}>
             🌍 Servers
           </Text>
@@ -233,7 +241,7 @@ const HomeScreen: React.FC = () => {
         
         <TouchableOpacity
           style={[styles.actionButton, {backgroundColor: theme.colors.surface}]}
-          onPress={() => navigation.navigate('Connection')}>
+          onPress={() => (navigation as any).navigate('Connection')}>
           <Text style={[styles.actionButtonText, {color: theme.colors.secondary}]}>
             📊 Details
           </Text>
