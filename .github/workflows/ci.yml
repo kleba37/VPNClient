@@ -363,7 +363,7 @@ jobs:
     
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v2
+      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -395,7 +395,7 @@ jobs:
           If you encounter any issues, please report them on our [GitHub Issues](https://github.com/${{ github.repository }}/issues) page.
     
     - name: Upload Android APK to Release
-      uses: actions/upload-release-asset@v2
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -405,7 +405,7 @@ jobs:
         asset_content_type: application/vnd.android.package-archive
     
     - name: Upload Android AAB to Release
-      uses: actions/upload-release-asset@v2
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -415,7 +415,7 @@ jobs:
         asset_content_type: application/octet-stream
     
     - name: Upload Windows Build to Release
-      uses: actions/upload-release-asset@v2
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -425,7 +425,7 @@ jobs:
         asset_content_type: application/zip
     
     - name: Upload Linux Build to Release
-      uses: actions/upload-release-asset@v2
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
