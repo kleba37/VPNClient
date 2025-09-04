@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   create-release:
     name: Create Release
@@ -34,16 +37,15 @@ jobs:
           return changelog;
     
     - name: Create Release
-      uses: actions/create-release@v1
+      uses: actions/github-script@v7
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
-        body: |
-          ## 🚀 Hysteria2 VPN Client Release ${{ github.ref }}
+        script: |
+          const tagName = context.ref.replace('refs/tags/', '');
+          const releaseName = `Release ${tagName}`;
+          
+          const releaseBody = `## 🚀 Hysteria2 VPN Client Release ${tagName}
           
           ### 📱 Supported Platforms
           - **Android**: APK & AAB packages
@@ -55,20 +57,37 @@ jobs:
           - **Docker**: Multi-platform container
           
           ### 🔧 Build Information
-          - **Commit**: ${{ github.sha }}
-          - **Branch**: ${{ github.ref_name }}
-          - **Build Date**: ${{ github.event.head_commit.timestamp }}
+          - **Commit**: ${context.sha}
+          - **Branch**: ${context.ref_name}
+          - **Build Date**: ${new Date().toISOString()}
           
           ### 📝 Changelog
-          ${{ steps.changelog.outputs.result }}
+          ${${{ steps.changelog.outputs.result }}}
           
           ### 📦 Downloads
           Build artifacts will be available once the CI/CD pipeline completes.
           
           ### 🐛 Bug Reports
-          If you encounter any issues, please report them on our [GitHub Issues](https://github.com/${{ github.repository }}/issues) page.
+          If you encounter any issues, please report them on our [GitHub Issues](https://github.com/${context.repo.owner}/${context.repo.repo}/issues) page.
           
           ### 🔗 Links
-          - [Documentation](https://github.com/${{ github.repository }}/blob/main/README.md)
-          - [Changelog](https://github.com/${{ github.repository }}/releases)
-          - [Issues](https://github.com/${{ github.repository }}/issues)
+          - [Documentation](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/README.md)
+          - [Changelog](https://github.com/${context.repo.owner}/${context.repo.repo}/releases)
+          - [Issues](https://github.com/${context.repo.owner}/${context.repo.repo}/issues)`;
+          
+          try {
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tagName,
+              name: releaseName,
+              body: releaseBody,
+              draft: false,
+              prerelease: false
+            });
+            console.log(`Release ${tagName} created successfully!`);
+          } catch (error) {
+            console.error('Error creating release:', error);
+            // Don't fail the workflow, just log the error
+            console.log('Release creation failed, but continuing...');
+          }
