@@ -12,7 +12,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../contexts/ThemeContext';
-import {VpnService} from '../services/VpnService';
+import VpnService from '../services/VpnService';
 import {ServerInfo} from '../types/ServerInfo';
 
 const {width, height} = Dimensions.get('window');
@@ -53,6 +53,14 @@ const HomeScreen: React.FC = () => {
     }
   }, [isConnecting, pulseAnim]);
 
+  const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
+    Alert.alert(type === 'success' ? 'Success' : 'Error', message);
+  };
+
+  const getCurrentServer = (): ServerInfo | null => {
+    return currentServer;
+  };
+
   const handleConnect = async () => {
     if (isConnected) {
       try {
@@ -60,41 +68,25 @@ const HomeScreen: React.FC = () => {
         await VpnService.disconnect();
         setIsConnected(false);
         setCurrentServer(null);
-        setConnectionStats({
-          upload: '0 KB/s',
-          download: '0 KB/s',
-          ping: '0 ms',
-        });
+        showNotification('Disconnected from VPN');
       } catch (error) {
-        Alert.alert('Error', 'Failed to disconnect from VPN');
+        showNotification('Failed to disconnect', 'error');
       } finally {
         setIsConnecting(false);
       }
     } else {
-      if (!currentServer) {
-        navigation.navigate('Servers');
-        return;
-      }
-
       try {
         setIsConnecting(true);
-        await VpnService.connect(currentServer);
-        setIsConnected(true);
-        
-        // Simulate connection stats
-        const interval = setInterval(() => {
-          if (isConnected) {
-            setConnectionStats({
-              upload: `${Math.floor(Math.random() * 1000 + 100)} KB/s`,
-              download: `${Math.floor(Math.random() * 2000 + 500)} KB/s`,
-              ping: `${Math.floor(Math.random() * 50 + 10)} ms`,
-            });
-          }
-        }, 2000);
-
-        return () => clearInterval(interval);
+        const server = getCurrentServer();
+        if (server) {
+          await VpnService.connect(server.host);
+          setIsConnected(true);
+          showNotification(`Connected to ${server.name}`);
+        } else {
+          showNotification('No server selected', 'error');
+        }
       } catch (error) {
-        Alert.alert('Error', 'Failed to connect to VPN');
+        showNotification('Failed to connect', 'error');
       } finally {
         setIsConnecting(false);
       }

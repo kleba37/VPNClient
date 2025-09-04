@@ -1,3 +1,5 @@
+import { describe, it, expect } from '@jest/globals';
+
 describe('Basic Test', () => {
   it('should work', () => {
     expect(1 + 1).toBe(2);
@@ -11,3 +13,5 @@ describe('Basic Test', () => {
     expect([1, 2, 3]).toHaveLength(3);
   });
 });
+
+export {};

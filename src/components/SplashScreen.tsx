@@ -47,7 +47,7 @@ const SplashScreen: React.FC = () => {
 
     // Navigate to home after 3 seconds
     const timer = setTimeout(() => {
-      navigation.replace('Home');
+      navigation.navigate('Home');
     }, 3000);
 
     return () => clearTimeout(timer);
