@@ -53,9 +53,7 @@ RUN adduser -S nextjs -u 1001
 WORKDIR /app
 
 # Copy built application
-COPY --from=base --chown=nextjs:nodejs /app/dist ./dist
-COPY --from=base --chown=nextjs:nodejs /app/public ./public
-COPY --from=base --chown=nextjs:nodejs /app/package*.json ./
+COPY --from=base --chown=nextjs:nodejs /app ./
 
 # Switch to non-root user
 USER nextjs
