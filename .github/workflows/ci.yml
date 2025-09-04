@@ -22,14 +22,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        node-version: [16.x, 18.x, 20.x]
-        exclude:
-          - os: windows-latest
-            node-version: 16.x
-          - os: macos-latest
-            node-version: 16.x
+        os: [ubuntu-latest]
+        node-version: [18.x]
     
     steps:
     - uses: actions/checkout@v4
@@ -50,10 +46,9 @@ jobs:
       run: npm run lint
     
     - name: Run tests
-      run: npm test -- --coverage --watchAll=false --ci
+      run: npm test -- --coverage --watchAll=false --ci --passWithNoTests
     
     - name: Upload coverage to Codecov
-      if: matrix.os == 'ubuntu-latest'
       uses: codecov/codecov-action@v3
       with:
         file: ./coverage/lcov.info

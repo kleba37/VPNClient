@@ -48,10 +48,9 @@
     "react-native-permissions": "^3.10.1",
     "react-native-device-info": "^10.11.0",
     "react-native-network-info": "^5.2.1",
-    "react-native-vpn": "^1.0.0",
     "react-native-config": "^1.5.1",
     "react-native-keychain": "^8.1.3",
-    "react-native-async-storage": "^1.19.5",
+    "react-native-async-storage": "^1.21.0",
     "react-native-splash-screen": "^3.3.0"
   },
   "devDependencies": {
