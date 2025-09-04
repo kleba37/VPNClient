@@ -149,27 +149,19 @@ jobs:
         pod install --repo-update || echo "Pod install completed with warnings"
         cd ..
     
-    - name: Build iOS Archive
+    - name: Build iOS
       run: |
         cd ios
-        xcodebuild -workspace Hysteria2VpnClient.xcworkspace -scheme Hysteria2VpnClient -configuration Release archive -archivePath Hysteria2VpnClient.xcarchive || echo "iOS build simulation completed"
+        ./build_ios.sh
         cd ..
     
-    - name: Build iOS Simulator
-      run: npm run build:ios:simulator
-    
-    - name: Upload iOS Archive
+    - name: Upload iOS Builds
       uses: actions/upload-artifact@v4
       with:
-        name: ios-archive-${{ github.sha }}
-        path: ios/Hysteria2VpnClient.xcarchive
-        retention-days: 30
-    
-    - name: Upload iOS Simulator Build
-      uses: actions/upload-artifact@v4
-      with:
-        name: ios-simulator-${{ github.sha }}
-        path: ios/build/
+        name: ios-builds-${{ github.sha }}
+        path: |
+          ios/Hysteria2VpnClient.xcarchive
+          ios/build/
         retention-days: 30
 
   # Windows build job
@@ -200,11 +192,8 @@ jobs:
     
     - name: Build Windows
       run: |
-        echo "Setting up MSBuild path..."
-        $env:PATH += ";C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin"
-        echo "Building Windows project..."
         cd windows
-        msbuild Hysteria2VpnClient.sln /p:Configuration=Release /p:Platform=x64 || echo "Windows build simulation completed"
+        ./build_windows.sh
         cd ..
     
     - name: Upload Windows Build
@@ -242,7 +231,10 @@ jobs:
         sudo apt-get install -y libssl-dev libcurl4-openssl-dev libsqlite3-dev
     
     - name: Build Linux
-      run: npm run build:linux
+      run: |
+        cd linux
+        ./build_linux.sh
+        cd ..
     
     - name: Upload Linux Build
       uses: actions/upload-artifact@v4
@@ -275,14 +267,14 @@ jobs:
     - name: Build macOS
       run: |
         cd macos
-        xcodebuild -project Hysteria2VpnClient.xcodeproj -scheme Hysteria2VpnClient -configuration Release archive -archivePath Hysteria2VpnClient.xcarchive || echo "macOS build simulation completed"
+        ./build_macos.sh
         cd ..
     
     - name: Upload macOS Build
       uses: actions/upload-artifact@v4
       with:
         name: macos-build-${{ github.sha }}
-        path: macos/Hysteria2VpnClient.xcarchive
+        path: macos/build/
         retention-days: 30
 
   # Web build job
@@ -308,9 +300,9 @@ jobs:
     
     - name: Build Web
       run: |
-        mkdir -p public
-        echo '<!DOCTYPE html><html><head><title>Hysteria2 VPN Client</title></head><body><div id="root"></div></body></html>' > public/index.html
-        npm run build:web
+        cd web
+        ./build_web.sh
+        cd ..
     
     - name: Upload Web Build
       uses: actions/upload-artifact@v4
