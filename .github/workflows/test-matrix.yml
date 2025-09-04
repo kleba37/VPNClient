@@ -77,9 +77,16 @@ jobs:
     - name: Test Android build
       run: |
         # Test if Android project can be built
-        cd android
-        ./gradlew assembleDebug --dry-run
-        cd ..
+        cd hysteria2_vpn_client/android
+        if [ -f "gradlew" ]; then
+          echo "✅ Android gradlew found!"
+          chmod +x gradlew
+          ./gradlew assembleDebug --dry-run
+        else
+          echo "❌ Android gradlew not found!"
+          exit 1
+        fi
+        cd ../..
         echo "✅ Android build test passed!"
 
   test-ios:
@@ -101,9 +108,16 @@ jobs:
     - name: Test iOS build
       run: |
         # Test if iOS project can be configured
-        cd ios
-        pod install --dry-run
-        cd ..
+        cd hysteria2_vpn_client/ios
+        if [ -f "Podfile" ]; then
+          echo "✅ iOS Podfile found!"
+          chmod +x test_ios_build.sh
+          ./test_ios_build.sh
+        else
+          echo "❌ iOS Podfile not found!"
+          exit 1
+        fi
+        cd ../..
         echo "✅ iOS build test passed!"
 
   test-windows:
@@ -125,6 +139,16 @@ jobs:
     - name: Test Windows build
       run: |
         # Test if Windows project can be configured
+        cd windows
+        if [ -f "Hysteria2VpnClient.sln" ]; then
+          echo "✅ Windows Solution file found!"
+          chmod +x test_windows_build.sh
+          ./test_windows_build.sh
+        else
+          echo "❌ Windows Solution file not found!"
+          exit 1
+        fi
+        cd ..
         echo "✅ Windows build test passed!"
 
   test-linux:
@@ -149,6 +173,8 @@ jobs:
         cd linux
         if [ -f "CMakeLists.txt" ]; then
           echo "✅ Linux CMakeLists.txt found!"
+          chmod +x test_linux_build.sh
+          ./test_linux_build.sh
         else
           echo "❌ Linux CMakeLists.txt not found!"
           exit 1
@@ -175,14 +201,16 @@ jobs:
     - name: Test macOS build
       run: |
         # Test if macOS project can be configured
-        cd macos
+        cd hysteria2_vpn_client/macos
         if [ -f "Hysteria2VpnClient.xcodeproj/project.pbxproj" ]; then
           echo "✅ macOS Xcode project found!"
+          chmod +x test_macos_build.sh
+          ./test_macos_build.sh
         else
           echo "❌ macOS Xcode project not found!"
           exit 1
         fi
-        cd ..
+        cd ../..
         echo "✅ macOS build test passed!"
 
   # Integration tests
