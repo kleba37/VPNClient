@@ -26,7 +26,15 @@ jest.mock('react-native-device-info', () => ({}));
 jest.mock('react-native-network-info', () => ({}));
 jest.mock('react-native-config', () => ({}));
 jest.mock('react-native-keychain', () => ({}));
-jest.mock('react-native-async-storage', () => ({}));
+jest.mock('react-native-mmkv', () => ({
+  MMKV: jest.fn(() => ({
+    set: jest.fn(),
+    getString: jest.fn(),
+    getBoolean: jest.fn(),
+    delete: jest.fn(),
+    clearAll: jest.fn(),
+  })),
+}));
 jest.mock('react-native-splash-screen', () => ({}));
 
 // Silence specific warnings

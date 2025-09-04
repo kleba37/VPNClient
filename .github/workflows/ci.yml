@@ -35,8 +35,11 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     
+    - name: Clear npm cache
+      run: npm cache clean --force
+    
     - name: Install dependencies
-      run: npm install
+      run: npm install --force
     
     - name: Run type check
       run: npm run type-check
@@ -75,8 +78,11 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
     
+    - name: Clear npm cache
+      run: npm cache clean --force
+    
     - name: Install dependencies
-      run: npm install
+      run: npm install --force
     
     - name: Setup Android SDK
       uses: android-actions/setup-android@v2
@@ -130,8 +136,11 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
     
+    - name: Clear npm cache
+      run: npm cache clean --force
+    
     - name: Install dependencies
-      run: npm install
+      run: npm install --force
     
     - name: Setup iOS
       run: |
@@ -174,8 +183,11 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
     
+    - name: Clear npm cache
+      run: npm cache clean --force
+    
     - name: Install dependencies
-      run: npm install
+      run: npm install --force
     
     - name: Setup Windows Build Tools
       run: |
@@ -206,8 +218,11 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
     
+    - name: Clear npm cache
+      run: npm cache clean --force
+    
     - name: Install dependencies
-      run: npm install
+      run: npm install --force
     
     - name: Install Linux dependencies
       run: |
@@ -240,8 +255,11 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
     
+    - name: Clear npm cache
+      run: npm cache clean --force
+    
     - name: Install dependencies
-      run: npm install
+      run: npm install --force
     
     - name: Build macOS
       run: npm run build:macos
@@ -268,8 +286,11 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
     
+    - name: Clear npm cache
+      run: npm cache clean --force
+    
     - name: Install dependencies
-      run: npm install
+      run: npm install --force
     
     - name: Build Web
       run: npm run build:web
