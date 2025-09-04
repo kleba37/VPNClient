@@ -363,6 +363,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         script: |
+          const core = require('@actions/core');
           const tagName = context.ref.replace('refs/tags/', '');
           
           try {
@@ -406,10 +407,8 @@ jobs:
               prerelease: false
             });
             
-            return {
-              upload_url: updatedRelease.data.upload_url,
-              html_url: updatedRelease.data.html_url
-            };
+            core.setOutput('upload_url', updatedRelease.data.upload_url);
+            core.setOutput('html_url', updatedRelease.data.html_url);
             
           } catch (error) {
             if (error.status === 404) {
@@ -446,10 +445,8 @@ jobs:
                 prerelease: false
               });
               
-              return {
-                upload_url: newRelease.data.upload_url,
-                html_url: newRelease.data.html_url
-              };
+              core.setOutput('upload_url', newRelease.data.upload_url);
+              core.setOutput('html_url', newRelease.data.html_url);
             } else {
               throw error;
             }
