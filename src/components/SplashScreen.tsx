@@ -1,57 +1,34 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  Animated,
   Dimensions,
   StatusBar,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../contexts/ThemeContext';
+import { RootStackParamList } from '../types/navigation';
+
+type NavigationProp = {
+  navigate: (screen: keyof RootStackParamList) => void;
+};
 
 const {width, height} = Dimensions.get('window');
 
 const SplashScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const {theme} = useTheme();
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.3)).current;
-  const logoAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const animations = [
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.spring(scaleAnim, {
-          toValue: 1,
-          tension: 50,
-          friction: 7,
-          useNativeDriver: true,
-        }),
-      ]),
-      Animated.timing(logoAnim, {
-        toValue: 1,
-        duration: 800,
-        delay: 300,
-        useNativeDriver: true,
-      }),
-    ];
-
-    Animated.sequence(animations).start();
-
     // Navigate to home after 3 seconds
     const timer = setTimeout(() => {
       navigation.navigate('Home');
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [fadeAnim, scaleAnim, logoAnim, navigation]);
+  }, [navigation]);
 
   return (
     <LinearGradient
@@ -59,31 +36,28 @@ const SplashScreen: React.FC = () => {
       style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" />
       
-      <Animated.View
+      <View
         style={[
           styles.logoContainer,
           {
-            opacity: fadeAnim,
-            transform: [{scale: scaleAnim}],
+            opacity: 1,
+            transform: [{scale: 1}],
           },
         ]}>
         <View style={styles.logo}>
           <Text style={styles.logoText}>VPN</Text>
           <Text style={styles.logoSubtext}>Hysteria2</Text>
         </View>
-      </Animated.View>
+      </View>
 
-      <Animated.View
+      <View
         style={[
           styles.subtitleContainer,
           {
-            opacity: logoAnim,
+            opacity: 1,
             transform: [
               {
-                translateY: logoAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [20, 0],
-                }),
+                translateY: 0,
               },
             ],
           },
@@ -92,7 +66,7 @@ const SplashScreen: React.FC = () => {
         <Text style={styles.description}>
           Next-generation VPN protocol for ultimate performance
         </Text>
-      </Animated.View>
+      </View>
 
       <View style={styles.footer}>
         <Text style={styles.footerText}>Powered by Hysteria2</Text>
