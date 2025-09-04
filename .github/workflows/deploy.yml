@@ -1,0 +1,78 @@
+name: Deploy to Kubernetes
+
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    
+    - name: Update kubeconfig
+      run: |
+        aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+    
+    - name: Deploy to Kubernetes
+      run: |
+        # Update image tag in deployment
+        sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/hysteria2-vpn-client:${{ github.sha }}|g" k8s/deployment.yaml
+        
+        # Apply Kubernetes manifests
+        kubectl apply -f k8s/
+        
+        # Wait for deployment to be ready
+        kubectl rollout status deployment/hysteria2-vpn-client -n default --timeout=300s
+        
+        echo "✅ Deployment completed successfully!"
+    
+    - name: Verify deployment
+      run: |
+        # Check pod status
+        kubectl get pods -l app=hysteria2-vpn-client
+        
+        # Check service status
+        kubectl get svc -l app=hysteria2-vpn-client
+        
+        # Check ingress status
+        kubectl get ingress -l app=hysteria2-vpn-client
+        
+        echo "✅ Deployment verification completed!"
+    
+    - name: Notify deployment
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        text: |
+          🚀 Hysteria2 VPN Client deployment ${{ job.status }}!
+          
+          **Repository**: ${{ github.repository }}
+          **Branch**: ${{ github.ref_name }}
+          **Commit**: ${{ github.sha }}
+          **Environment**: Production
+          
+          ${{ job.status == 'success' && '✅ Deployment successful!' || '❌ Deployment failed!' }}
+          
+          View logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
