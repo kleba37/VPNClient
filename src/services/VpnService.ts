@@ -28,7 +28,7 @@ export class VpnService {
       // Start monitoring connection stats
       this.startStatsMonitoring();
 
-      console.log(`Connected to ${server.name} (${server.host}:${server.port})`);
+      console.log(`Connected to ${_server.name} (${_server.host}:${_server.port})`);
     } catch (error) {
       console.error('Failed to connect to VPN:', error);
       throw error;
